@@ -4,18 +4,128 @@ author: "Colin Kegler"
 date: "Monday, November 16, 2015"
 output: html_document
 ---
+```{r, echo=FALSE, cache=TRUE }
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-
-```{r}
-summary(cars)
 ```
 
-You can also embed plots, for example:
+## **Executive Summary**:
+In their study, "Qualitative Activity Recognition of Weight Lifting Exercises", Velloso, E.; Bulling, A.; Gellersen, H., et al, collected bio-electronic sensor data on 6 subjects, using 5 pre-defined wieght-lifting exercises. Class A corresponds to the specified execution of the exercise, while the other 4 classes (B,C,D, and E) correspond to common mistakes. The dataset from these exercises has been made available to the general public. From it, we constructed a predictive model, based on PCA pre-processing and 10-fold KNN cross validation, to predict the class of exercise activity. 
 
-```{r, echo=FALSE}
-plot(cars)
+## Exploratory Analysis
+
+<ul>
+<li>Discarding Items with Near Zero Variance</li>
+
+<li>Remove columns with excessive number of NA values</li>
+
+<li>Explore linear combinations with other predictors</li> 
+    Predictors that can be composed of linear combinations of other predictors add more variation to the model.  Fortunately, in this dataset no linear combinations of predictors were discovered.
+
+     </pre>    
+<li> Remove highly correlated descriptors </li>
+
+    <pre>
+    highlyCorDescr <- findCorrelation(descrCor, cutoff = .75)
+    pmlTrainingData4 <- pmlTrainingData3[,-highlyCorDescr]
+    </pre>
+<
+</ul>
+
+## Training the Model 
+--  Pre-processing with PCA (principal component analysis) 
+--  Cross-Validation with KNN (Nearest Neighbor)
+
+## Reproducibility
+The training data for this project are available here: 
+
+https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv
+
+The test data are available here: 
+
+https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv
+
+```{r, echo=TRUE, cache=TRUE}
+
+library(caret);
+library(ggplot2);
+
+
+naValues <- c("NA", "#DIV/0!")
+
+# PART 1 (Data Input):read csv file
+pmlTrainingData = read.csv("pml-training.csv", header=TRUE, na.strings=naValues, stringsAsFactors=FALSE, row.names=1)  
+
+# PART 2 ( Basic Preprocessing of Data)
+#Detect columns with near zero variance, as candidates to discard from training model
+nsv <- nearZeroVar(pmlTrainingData,saveMetrics=TRUE)
+
+pmlTrainingData2  <-   pmlTrainingData[, which(nsv$nzv==FALSE)]
+
+
+# Remove columns with excessive number of NA values
+
+pmlTrainingData3  <- pmlTrainingData2[, -which(colnames(pmlTrainingData2)=="classe")]
+pmlTrainingData3  <- pmlTrainingData3[, -which(colnames(pmlTrainingData3)=="user_name")]
+pmlTrainingData3  <- pmlTrainingData3[, -which(colnames(pmlTrainingData3)=="cvtd_timestamp")]
+pmlTrainingData3  <- pmlTrainingData3[, -which(colSums(is.na(pmlTrainingData3))/nrow(pmlTrainingData3) > 0)]
+
+# Find if some columns are linear combinations of other columns within data
+
+comboInfo <- findLinearCombos(pmlTrainingData3)
+# $linearCombos
+# list()
+# 
+# $remove
+# NULL
+
+# We find that the pmlTrainingData3 object does not contain columns that are linear combinations of other columns
+
+
+# Remove highly correlated descriptors with a threshhold above 0.75
+
+descrCor <- cor(pmlTrainingData3)
+summary(descrCor[upper.tri(descrCor)])
+
+highlyCorDescr <- findCorrelation(descrCor, cutoff = .75)
+
+pmlTrainingData4 <- pmlTrainingData3[,-highlyCorDescr]
+
+#PART 4:  Train model with PCA pre-processing and a k-nearest neighbor regression model
+# USE PCA (Principal Component Analysis) to reduce number of covariates
+
+# define training control ; use k-fold cross validation with 10 data slices
+pmlTrainingData5 <- cbind(pmlTrainingData4,pmlTrainingData$classe)
+names(pmlTrainingData5)[names(pmlTrainingData5) == 'pmlTrainingData$classe'] <- 'classe'
+
+train_control <- trainControl(method="cv", number=10)
+
+modelFit <- train(classe ~., data=pmlTrainingData5, method = "knn", preProcess=c("pca"), 
+                 trControl = trainControl(method = "cv", number=10))
+
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## Addendum
+
+
+
+
+```{r ,echo=FALSE, cache=TRUE}
+
+
+naValues <- c("NA", "#DIV/0!")
+pmlTrainingData = read.csv("pml-training.csv", header=TRUE, na.strings=naValues, stringsAsFactors=FALSE, row.names=1)  
+
+# PART 2 ( Basic Preprocessing of Data)
+#Detect columns with near zero variance, as candidates to discard from training model
+nsv <- nearZeroVar(pmlTrainingData,saveMetrics=TRUE)
+
+pmlTrainingData2  <-   pmlTrainingData[, which(nsv$nzv==FALSE)]
+
+hist(pmlTrainingData2$raw_timestamp_part_1, labels=TRUE) 
+
+
+```
+
