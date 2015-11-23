@@ -58,6 +58,28 @@ The k-fold cross validation method involves splitting the dataset into k-subsets
 
 We used 10-fold cross-validation with the model.
 
+<pre>
+> modelFit
+k-Nearest Neighbors 
+
+19622 samples
+   33 predictor
+    5 classes: 'A', 'B', 'C', 'D', 'E' 
+
+Pre-processing: principal component signal extraction (33), centered (33), scaled (33) 
+Resampling: Cross-Validated (10 fold) 
+Summary of sample sizes: 17661, 17658, 17660, 17659, 17659, 17660, ... 
+Resampling results across tuning parameters:
+
+  k  Accuracy   Kappa      Accuracy SD  Kappa SD   
+  5  0.9675373  0.9589351  0.003337522  0.004222122
+  7  0.9573958  0.9461076  0.004254488  0.005384654
+  9  0.9458261  0.9314747  0.003321717  0.004199568
+
+Accuracy was used to select the optimal model using  the largest value.
+The final value used for the model was k = 5. 
+
+</pre>
 ## Reproducibility
 The training data for this project are available here: 
 
