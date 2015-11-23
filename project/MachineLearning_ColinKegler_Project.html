@@ -113,6 +113,19 @@ pmlTrainingData4 &lt;- pmlTrainingData3[,-highlyCorDescr]
 <h2>Training the Model</h2>
 <p>– Pre-processing with PCA (principal component analysis)</p>
 <p>Principal component analysis (PCA) was used to transform the data to a smaller sub-space where the new variable are uncorrelated with one another. The predictors are scaled to their mean and normalized by their standard deviation in the computation.</p>
+<p>After the previous steps of pre-processing, our training model has been reduced to 33 predictors:</p>
+<pre>
+&gt; modelFit$coefnames
+ [1] &quot;raw_timestamp_part_1&quot; &quot;raw_timestamp_part_2&quot; &quot;num_window&quot;           &quot;pitch_belt&quot;          
+ [5] &quot;yaw_belt&quot;             &quot;gyros_belt_x&quot;         &quot;gyros_belt_y&quot;         &quot;gyros_belt_z&quot;        
+ [9] &quot;magnet_belt_y&quot;        &quot;roll_arm&quot;             &quot;pitch_arm&quot;            &quot;yaw_arm&quot;             
+[13] &quot;total_accel_arm&quot;      &quot;gyros_arm_y&quot;          &quot;gyros_arm_z&quot;          &quot;magnet_arm_x&quot;        
+[17] &quot;magnet_arm_z&quot;         &quot;roll_dumbbell&quot;        &quot;pitch_dumbbell&quot;       &quot;yaw_dumbbell&quot;        
+[21] &quot;total_accel_dumbbell&quot; &quot;gyros_dumbbell_y&quot;     &quot;roll_forearm&quot;         &quot;pitch_forearm&quot;       
+[25] &quot;yaw_forearm&quot;          &quot;total_accel_forearm&quot;  &quot;gyros_forearm_x&quot;      &quot;gyros_forearm_z&quot;     
+[29] &quot;accel_forearm_x&quot;      &quot;accel_forearm_z&quot;      &quot;magnet_forearm_x&quot;     &quot;magnet_forearm_y&quot;    
+[33] &quot;magnet_forearm_z&quot;  
+</pre>
 <p>– Cross-Validation with KNN (Nearest Neighbor) The k-fold cross validation method involves splitting the dataset into k-subsets. For each subset is held out while the model is trained on all other subsets. This process is completed until accuracy is determined for each instance in the dataset; an overall accuracy estimate is provided.</p>
 <p>We used 10-fold cross-validation with the model.</p>
 <pre>

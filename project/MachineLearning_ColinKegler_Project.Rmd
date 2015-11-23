@@ -53,6 +53,21 @@ We removed 69 columns that were primarily NA values
 
 Principal component analysis (PCA) was used to transform the data to a smaller sub-space where the new variable are uncorrelated with one another. The predictors are scaled to their mean and normalized by their standard deviation in the computation.
 
+After the previous steps of pre-processing, our training model has been reduced to 33 predictors:
+
+<pre>
+> modelFit$coefnames
+ [1] "raw_timestamp_part_1" "raw_timestamp_part_2" "num_window"           "pitch_belt"          
+ [5] "yaw_belt"             "gyros_belt_x"         "gyros_belt_y"         "gyros_belt_z"        
+ [9] "magnet_belt_y"        "roll_arm"             "pitch_arm"            "yaw_arm"             
+[13] "total_accel_arm"      "gyros_arm_y"          "gyros_arm_z"          "magnet_arm_x"        
+[17] "magnet_arm_z"         "roll_dumbbell"        "pitch_dumbbell"       "yaw_dumbbell"        
+[21] "total_accel_dumbbell" "gyros_dumbbell_y"     "roll_forearm"         "pitch_forearm"       
+[25] "yaw_forearm"          "total_accel_forearm"  "gyros_forearm_x"      "gyros_forearm_z"     
+[29] "accel_forearm_x"      "accel_forearm_z"      "magnet_forearm_x"     "magnet_forearm_y"    
+[33] "magnet_forearm_z"  
+</pre>
+
 --  Cross-Validation with KNN (Nearest Neighbor)
 The k-fold cross validation method involves splitting the dataset into k-subsets. For each subset is held out while the model is trained on all other subsets. This process is completed until accuracy is determined for each instance in the dataset; an overall accuracy estimate is provided.
 
