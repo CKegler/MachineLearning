@@ -106,4 +106,4 @@ pmlTestingData = read.csv("pml-testing.csv", header=TRUE, na.strings=naValues, s
 
 testPC <- predict(modelFit, pmlTestingData)
 
-confusionMatrix(pmlTestingData, predict(modelFit,testPC))
+confusionMatrix(testPC,[pmlTestingData$])

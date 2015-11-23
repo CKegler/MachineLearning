@@ -45,7 +45,8 @@ We removed 69 columns that were primarily NA values
     highlyCorDescr <- findCorrelation(descrCor, cutoff = .75)
     pmlTrainingData4 <- pmlTrainingData3[,-highlyCorDescr]
     </pre>
-<
+    The analysis found 22 highly correlated predictors above a absolute threshhold of 0.75, which were removed.
+</li>
 </ul>
 
 ## Training the Model 
@@ -66,6 +67,7 @@ After the previous steps of pre-processing, our training model has been reduced 
 [25] "yaw_forearm"          "total_accel_forearm"  "gyros_forearm_x"      "gyros_forearm_z"     
 [29] "accel_forearm_x"      "accel_forearm_z"      "magnet_forearm_x"     "magnet_forearm_y"    
 [33] "magnet_forearm_z"  
+
 </pre>
 
 --  Cross-Validation with KNN (Nearest Neighbor)
@@ -95,6 +97,17 @@ Accuracy was used to select the optimal model using  the largest value.
 The final value used for the model was k = 5. 
 
 </pre>
+
+<b>Accuracy of the Predictors</b>
+
+The 10-fold cross validation model on the training data yields a predictive accuracy of ~ 96.7% - the accuracy of prediction within the training data set. We do not aniticipate this accuracy to carry over as highly on the test data for the reasons:
+
+(1) The sample size of the test data is rather small relative to the training data (i.e. n=20 observations in test compared to n=20,000+ observations for training data).  Each incorrect prediction of the model with the test data increases the error rate by 5%.
+
+(2)  The use of knn validation may represent an over-fitting model of the training data which may not apply to the test data observations.  In essence, the model may accurately predict the training data, but its accuracy will be less accurately predcit the test data.
+
+(3) We also expect less accuracy with the test data because we devised a model to predict the outcome, "classe", in the training data; no such column exists within the test data.  The absence of "classe" as an outcome variable in the test data means that we have to revise the model to predict an overlapping outcome, such as "raw_timestamp_part_1".  (Please refer to the <b>Addendum</b> section, where we observe that this time obervations fall into one of four distinct bins)
+
 ## Reproducibility
 The training data for this project are available here: 
 
@@ -180,7 +193,7 @@ testPC <- predict(modelFit, pmlTestingData)
 ## Addendum
 
 
-
+With the variable, "raw_timestamp_part_1", we observe that the times (which may be better interpreted as durations) fall into one of four distinct periods or bins.
 
 ```{r ,echo=FALSE, cache=TRUE}
 
