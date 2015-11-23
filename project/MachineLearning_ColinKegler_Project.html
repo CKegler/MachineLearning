@@ -111,8 +111,10 @@ pmlTrainingData4 &lt;- pmlTrainingData3[,-highlyCorDescr]
 </div>
 <div id="training-the-model" class="section level2">
 <h2>Training the Model</h2>
-<p>– Pre-processing with PCA (principal component analysis) The k-fold cross validation method involves splitting the dataset into k-subsets. For each subset is held out while the model is trained on all other subsets. This process is completed until accuracy is determined for each instance in the dataset; an overall accuracy estimate is provided.</p>
-<p>We used 10-fold cross validation to estimate – Cross-Validation with KNN (Nearest Neighbor)</p>
+<p>– Pre-processing with PCA (principal component analysis)</p>
+<p>Principal component analysis (PCA) was used to transform the data to a smaller sub-space where the new variable are uncorrelated with one another. The predictors are scaled to their mean and normalized by their standard deviation in the computation.</p>
+<p>– Cross-Validation with KNN (Nearest Neighbor) The k-fold cross validation method involves splitting the dataset into k-subsets. For each subset is held out while the model is trained on all other subsets. This process is completed until accuracy is determined for each instance in the dataset; an overall accuracy estimate is provided.</p>
+<p>We used 10-fold cross-validation with the model.</p>
 </div>
 <div id="reproducibility" class="section level2">
 <h2>Reproducibility</h2>
