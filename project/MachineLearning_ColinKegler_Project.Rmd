@@ -16,9 +16,25 @@ In their study, "Qualitative Activity Recognition of Weight Lifting Exercises", 
 
 <ul>
 <li>Discarding Items with Near Zero Variance</li>
-
+    Columns with a highly repetitive or non-varying data values can cause a model to become unreliable, expecially during the validation phase. We removed 35 such values.
+<pre>
+> dim(pmlTrainingData)
+[1] 19622   159
+> dim(pmlTrainingData2)
+[1] 19622   124
+> 159-124
+</pre>
+    
 <li>Remove columns with excessive number of NA values</li>
+Several predictor columns primarily contained NA values (> 95% missing).  The large number of missing values would have made any attempt at imputing missing values from the sparse existing values, highly erroneous.
 
+We removed 69 columns that were primarily NA values
+<pre>
+> dim(pmlTrainingData3)
+[1] 19622    55
+> dim(pmlTrainingData2)
+[1] 19622   124
+</pre?
 <li>Explore linear combinations with other predictors</li> 
     Predictors that can be composed of linear combinations of other predictors add more variation to the model.  Fortunately, in this dataset no linear combinations of predictors were discovered.
 
@@ -34,6 +50,10 @@ In their study, "Qualitative Activity Recognition of Weight Lifting Exercises", 
 
 ## Training the Model 
 --  Pre-processing with PCA (principal component analysis) 
+The k-fold cross validation method involves splitting the dataset into k-subsets. For each subset is held out while the model is trained on all other subsets. This process is completed until accuracy is determined for each instance in the dataset; an overall accuracy estimate is provided.
+
+
+We used 10-fold cross validation to estimate 
 --  Cross-Validation with KNN (Nearest Neighbor)
 
 ## Reproducibility
@@ -102,6 +122,17 @@ train_control <- trainControl(method="cv", number=10)
 
 modelFit <- train(classe ~., data=pmlTrainingData5, method = "knn", preProcess=c("pca"), 
                  trControl = trainControl(method = "cv", number=10))
+
+# make predictions from the training data
+predictions <- predict(modelFit, pmlTrainingData)
+
+
+## Part 5. Now use the Training Prediction Model, modelFit, on the TEST set
+
+
+pmlTestingData = read.csv("pml-testing.csv", header=TRUE, na.strings=naValues, stringsAsFactors=FALSE, row.names=1)  
+
+testPC <- predict(modelFit, pmlTestingData)
 
 
 ```

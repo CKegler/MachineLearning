@@ -59,7 +59,7 @@ pmlTrainingData3  <- pmlTrainingData3[, -which(colnames(pmlTrainingData3)=="cvtd
 pmlTrainingData3  <- pmlTrainingData3[, -which(colSums(is.na(pmlTrainingData3))/nrow(pmlTrainingData3) > 0)]
 
 
-# Find if some columns are linear combinations of other columsn within data
+# Find if some columns are linear combinations of other columns within data
 
 comboInfo <- findLinearCombos(pmlTrainingData3)
 # $linearCombos
@@ -99,11 +99,11 @@ modelFit <- train(classe ~., data=pmlTrainingData5, method = "knn", preProcess=c
 predictions <- predict(modelFit, pmlTrainingData)
 
 
-## Part 5. Now use the Training Prediction Model, knnFit2, on the TEST set
+## Part 5. Now use the Training Prediction Model, modelFit, on the TEST set
 
 
 pmlTestingData = read.csv("pml-testing.csv", header=TRUE, na.strings=naValues, stringsAsFactors=FALSE, row.names=1)  
 
 testPC <- predict(modelFit, pmlTestingData)
 
-confusionMatrix(pmlTestingData,predict(knnFit2,testPC))
+confusionMatrix(pmlTestingData, predict(modelFit,testPC))

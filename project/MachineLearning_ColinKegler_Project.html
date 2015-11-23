@@ -77,15 +77,28 @@ img {
 <li>
 Discarding Items with Near Zero Variance
 </li>
+<pre><code>Columns with a highly repetitive or non-varying data values can cause a model to become unreliable, expecially during the validation phase. We removed 35 such values.</code></pre>
+<pre>
+&gt; dim(pmlTrainingData)
+[1] 19622   159
+&gt; dim(pmlTrainingData2)
+[1] 19622   124
+&gt; 159-124
+</pre>
 <li>
 Remove columns with excessive number of NA values
 </li>
-<li>
-Explore linear combinations with other predictors
-</li>
-<pre><code>Predictors that can be composed of linear combinations of other predictors add more variation to the model.  Fortunately, in this dataset no linear combinations of predictors were discovered.
+<p>Several predictor columns primarily contained NA values (&gt; 95% missing). The large number of missing values would have made any attempt at imputing missing values from the sparse existing values, highly erroneous.</p>
+We removed 69 columns that were primarily NA values
+<pre>
+&gt; dim(pmlTrainingData3)
+[1] 19622    55
+&gt; dim(pmlTrainingData2)
+[1] 19622   124
+</pre?>Explore linear combinations with other predictors</li> 
+    Predictors that can be composed of linear combinations of other predictors add more variation to the model.  Fortunately, in this dataset no linear combinations of predictors were discovered.
 
- &lt;/pre&gt;    </code></pre>
+     </pre>
 <li>
 Remove highly correlated descriptors
 </li>
@@ -98,7 +111,8 @@ pmlTrainingData4 &lt;- pmlTrainingData3[,-highlyCorDescr]
 </div>
 <div id="training-the-model" class="section level2">
 <h2>Training the Model</h2>
-<p>– Pre-processing with PCA (principal component analysis) – Cross-Validation with KNN (Nearest Neighbor)</p>
+<p>– Pre-processing with PCA (principal component analysis) The k-fold cross validation method involves splitting the dataset into k-subsets. For each subset is held out while the model is trained on all other subsets. This process is completed until accuracy is determined for each instance in the dataset; an overall accuracy estimate is provided.</p>
+<p>We used 10-fold cross validation to estimate – Cross-Validation with KNN (Nearest Neighbor)</p>
 </div>
 <div id="reproducibility" class="section level2">
 <h2>Reproducibility</h2>
@@ -161,7 +175,18 @@ names(pmlTrainingData5)[names(pmlTrainingData5) == 'pmlTrainingData$classe'] &lt
 train_control &lt;- trainControl(method=&quot;cv&quot;, number=10)
 
 modelFit &lt;- train(classe ~., data=pmlTrainingData5, method = &quot;knn&quot;, preProcess=c(&quot;pca&quot;), 
-                 trControl = trainControl(method = &quot;cv&quot;, number=10))</code></pre>
+                 trControl = trainControl(method = &quot;cv&quot;, number=10))
+
+# make predictions from the training data
+predictions &lt;- predict(modelFit, pmlTrainingData)
+
+
+## Part 5. Now use the Training Prediction Model, modelFit, on the TEST set
+
+
+pmlTestingData = read.csv(&quot;pml-testing.csv&quot;, header=TRUE, na.strings=naValues, stringsAsFactors=FALSE, row.names=1)  
+
+testPC &lt;- predict(modelFit, pmlTestingData)</code></pre>
 </div>
 <div id="addendum" class="section level2">
 <h2>Addendum</h2>
