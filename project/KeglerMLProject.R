@@ -95,6 +95,7 @@ train_control <- trainControl(method="cv", number=10)
 modelFit <- train(classe ~., data=pmlTrainingData5, method = "knn", preProcess=c("pca"), 
                  trControl = trainControl(method = "cv", number=10))
 
+modelFit # get output of within-sample accuracy ie. accuracy of predictor within training data
 # make predictions from the training data
 predictions <- predict(modelFit, pmlTrainingData)
 
@@ -104,6 +105,31 @@ predictions <- predict(modelFit, pmlTrainingData)
 
 pmlTestingData = read.csv("pml-testing.csv", header=TRUE, na.strings=naValues, stringsAsFactors=FALSE, row.names=1)  
 
-testPC <- predict(modelFit, pmlTestingData)
+#Note: the variable "classe" does not exist in the test data, so use another variable as an outcome
+# such, as raw_timestamp_part_1. This timestamp looks more like a duration interval.
 
-confusionMatrix(testPC,[pmlTestingData$])
+pmlTrainingData6  <-  pmlTrainingData5
+
+#From the histogram of raw_timestamp_part_1 falls into 1 of 4 total bins, 
+# which may correspond to each of the 4 wearable devices - 
+# the belt, the arm band, the glove, and the dumbbell. So,
+# convert pmlTrainingData2$raw_timestamp_part_1  values into one of the four bins 
+# as a factor variable
+
+
+pmlTrainingData6$raw_timestamp_part_1 <- data.frame(pmlTrainingData6$raw_timestamp_part_1, 
+                                                    bin=cut(pmlTrainingData6$raw_timestamp_part_1,
+                                                    breaks=4, labels=FALSE))$bin 
+pmlTrainingData6$classe <- NULL 
+
+pmlTestingData$raw_timestamp_part_1 <- data.frame(pmlTestingData$raw_timestamp_part_1, 
+                                                    bin=cut(pmlTestingData$raw_timestamp_part_1,
+                                                            breaks=4, labels=FALSE))$bin 
+
+modelFit2 <- train(raw_timestamp_part_1 ~., data=pmlTrainingData6, method = "knn", preProcess=c("pca"), 
+                  trControl = trainControl(method = "cv", number=10))
+
+testPC <- floor(predict(modelFit2, pmlTestingData))
+
+
+confusionMatrix(testPC,pmlTestingData$raw_timestamp_part_1)

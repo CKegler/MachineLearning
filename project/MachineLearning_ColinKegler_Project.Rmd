@@ -108,6 +108,43 @@ The 10-fold cross validation model on the training data yields a predictive accu
 
 (3) We also expect less accuracy with the test data because we devised a model to predict the outcome, "classe", in the training data; no such column exists within the test data.  The absence of "classe" as an outcome variable in the test data means that we have to revise the model to predict an overlapping outcome, such as "raw_timestamp_part_1".  (Please refer to the <b>Addendum</b> section, where we observe that this time obervations fall into one of four distinct bins)
 
+When we reconstruct the model to use "raw_timestamp_part_1" as an outcome variable, placing the outcome in 1 of 4 bin durations, we see that the accuracy from the training dataset to the test data set drop dramatically.  
+
+Conclusion: <b> This specific model using PCA pre-processing and 10-fold cross validation overfits the training data set and does not serve as a great predictor on the test dataset. </b> The model's with-in predictve error is low, but between dataset error is high. A new, improved predictive model should be explored.
+
+<pre>
+> confusionMatrix(testPC,pmlTestingData$raw_timestamp_part_1)
+Confusion Matrix and Statistics
+
+          Reference
+Prediction 1 2 3 4
+         1 4 8 2 6
+         2 0 0 0 0
+         3 0 0 0 0
+         4 0 0 0 0
+
+Overall Statistics
+                                          
+               Accuracy : 0.2             
+                 95% CI : (0.0573, 0.4366)
+    No Information Rate : 0.4             
+    P-Value [Acc > NIR] : 0.984           
+                                          
+                  Kappa : 0               
+ Mcnemar's Test P-Value : NA              
+
+Statistics by Class:
+
+                     Class: 1 Class: 2 Class: 3 Class: 4
+Sensitivity               1.0      0.0      0.0      0.0
+Specificity               0.0      1.0      1.0      1.0
+Pos Pred Value            0.2      NaN      NaN      NaN
+Neg Pred Value            NaN      0.6      0.9      0.7
+Prevalence                0.2      0.4      0.1      0.3
+Detection Rate            0.2      0.0      0.0      0.0
+Detection Prevalence      1.0      0.0      0.0      0.0
+Balanced Accuracy         0.5      0.5      0.5      0.5
+</pre>
 ## Reproducibility
 The training data for this project are available here: 
 
@@ -179,12 +216,37 @@ modelFit <- train(classe ~., data=pmlTrainingData5, method = "knn", preProcess=c
 predictions <- predict(modelFit, pmlTrainingData)
 
 
-## Part 5. Now use the Training Prediction Model, modelFit, on the TEST set
+## Part 5. Devise a different Training Prediction Model, modelFit2, to use on the TEST set
 
 
 pmlTestingData = read.csv("pml-testing.csv", header=TRUE, na.strings=naValues, stringsAsFactors=FALSE, row.names=1)  
 
-testPC <- predict(modelFit, pmlTestingData)
+pmlTrainingData6  <-  pmlTrainingData5
+
+#From the histogram of raw_timestamp_part_1 falls into 1 of 4 total bins, 
+# which may correspond to each of the 4 wearable devices - 
+# the belt, the arm band, the glove, and the dumbbell. So,
+# convert pmlTrainingData2$raw_timestamp_part_1  values into one of the four bins 
+# as a factor variable
+
+
+pmlTrainingData6$raw_timestamp_part_1 <- data.frame(pmlTrainingData6$raw_timestamp_part_1, 
+                                                    bin=cut(pmlTrainingData6$raw_timestamp_part_1,
+                                                    breaks=4, labels=FALSE))$bin 
+pmlTrainingData6$classe <- NULL 
+
+pmlTestingData$raw_timestamp_part_1 <- data.frame(pmlTestingData$raw_timestamp_part_1, 
+                                                    bin=cut(pmlTestingData$raw_timestamp_part_1,
+                                                            breaks=4, labels=FALSE))$bin 
+
+modelFit2 <- train(raw_timestamp_part_1 ~., data=pmlTrainingData6, method = "knn", preProcess=c("pca"), 
+                  trControl = trainControl(method = "cv", number=10))
+
+testPC <- floor(predict(modelFit2, pmlTestingData))
+
+
+confusionMatrix(testPC,pmlTestingData$raw_timestamp_part_1)
+
 
 
 ```
